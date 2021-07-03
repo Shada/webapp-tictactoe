@@ -136,13 +136,6 @@ function GameMenu(props) {
   );
 }
 
-function WhichToRender(props) {
-  if (props.gameStarted) {
-    return <GameStarted gameID={props.gameID}/>;
-  }
-  return <GameMenu/>;
-}
-
 class Game extends React.Component {
   constructor(props) {
     super(props);
@@ -153,26 +146,40 @@ class Game extends React.Component {
   }
   
   handleStartGameButtonClick() {
-    let gameStarted = !this.state.gameStarted;
-    let gameID = this.state.gameID;
     
-    gameID += gameStarted ? 1 : 0;
+    this.setState({
+      gameStarted: true,
+      gameID: this.state.gameID + 1
+    });
+  }
+  
+  handleQuitGameButtonClick() {
+    let gameStarted = false;
 
     this.setState({
-      gameStarted: gameStarted,
-      gameID: gameID
+      gameStarted: gameStarted
     });
   }
 
   render() {
+    if (this.state.gameStarted) {
+      return (
+        <div>
+          <GameStarted gameID={this.state.gameID}/>
+          <button onClick={() => this.handleQuitGameButtonClick()}>
+            Quit Game
+          </button>
+        </div>
+      );
+    }
     return (
       <div>
-        <WhichToRender gameStarted={this.state.gameStarted} gameID={this.state.gameID}/>
+        <GameMenu/>
         <button onClick={() => this.handleStartGameButtonClick()}>
           New Game
         </button>
       </div>
-    )  
+    );
   }
 }
 
