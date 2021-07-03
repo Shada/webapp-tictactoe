@@ -109,19 +109,70 @@ class Board extends React.Component {
   }
 }
 
-class Game extends React.Component {
-  render() {
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board />
-        </div>
-        <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
+function GameStarted(props) {
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board />
+      </div>
+      <div className="game-info">
+        <div>
+          <p>GameID: {props.gameID}</p>
         </div>
       </div>
-    );
+    </div>
+  );
+}
+
+function GameMenu(props) {
+  return (
+    <div className="game">
+      <div className="game-menu">
+        <div>
+          <p>Please click the button to start the game</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WhichToRender(props) {
+  if (props.gameStarted) {
+    return <GameStarted gameID={props.gameID}/>;
+  }
+  return <GameMenu/>;
+}
+
+class Game extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      gameID: 0,
+      gameStarted: false
+    };
+  }
+  
+  handleStartGameButtonClick() {
+    let gameStarted = !this.state.gameStarted;
+    let gameID = this.state.gameID;
+    
+    gameID += gameStarted ? 1 : 0;
+
+    this.setState({
+      gameStarted: gameStarted,
+      gameID: gameID
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <WhichToRender gameStarted={this.state.gameStarted} gameID={this.state.gameID}/>
+        <button onClick={() => this.handleStartGameButtonClick()}>
+          New Game
+        </button>
+      </div>
+    )  
   }
 }
 
