@@ -16,7 +16,7 @@ function calculateWinner(squares) {
 
   for (let i = 0; i < winning_rows.length; i++) {
     const [a, b, c] = winning_rows[i];
-    if (squares[a] != "." && squares[a] === squares[b] && squares[a] === squares[c]) {
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a]; 
     }
   }
