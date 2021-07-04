@@ -1,5 +1,6 @@
 import './App.css';
-import React from "react";
+import {Component} from "react";
+import axios from "axios";
 
 // TODO: This should be done in the backend when connected 
 function calculateWinner(squares) {
@@ -16,7 +17,7 @@ function calculateWinner(squares) {
 
   for (let i = 0; i < winning_rows.length; i++) {
     const [a, b, c] = winning_rows[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+    if (squares[a] !== '.' && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a]; 
     }
   }
@@ -37,29 +38,55 @@ function Square(props) {
         height:100,
         backgroundColor:'#EEE',
         flex: 1,
-        color: props.value ? '#333' :'#EEE',
+        color: props.value === '.' ? '#EEE' : '#333' ,
         fontSize: 70,
       }}
     >
-      {props.value ? props.value : '.'}
+      {props.value}
     </button>
   );
 }
 
-class Board extends React.Component {
+class Board extends Component {
   
   constructor(props) {
     super(props);
+
     this.state = {
-      squares: Array(9).fill(null), // TODO: This will be fetch from api.
+      squares: Array(9).fill('.'), // TODO: This will be fetch from api.
       xIsNext: true,
+      game: {
+        start_time: new Date(),
+        player_one: "Player1",
+        player_two: "Player2",
+        board_state: ".........",
+        completed: false,
+        moves: [],
+      }
     };
   }
 
+  componentDidMount() {
+    this.refreshGameData();
+  }
+
+  refreshGameData() {
+    var self = this;
+    axios
+      .get('/api/games/3/')
+      .then(function (response){
+        console.log(response);
+        self.setState({game: response.data});
+      })
+      .catch(function(err) {
+        console.log(err)
+      });
+  };
+
   handleClick(i) {
-    const squares = this.state.squares.slice();
+    var squares = this.state.squares.slice();
     // No click if winner or square is taken
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares) || squares[i] !== '.') {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
@@ -67,6 +94,24 @@ class Board extends React.Component {
       squares: squares,
       xIsNext: !this.state.xIsNext,
     });
+    let move = {
+      game: 3,
+      square: i
+    };
+    
+    axios
+      .post('/api/moves/', move)
+      .catch((err) => console.log(err));
+    
+    var localgame = this.state.game;
+    console.log(squares);
+    console.log(squares.toLocaleString());
+    console.log(squares.join(""));
+    localgame["board_state"] = squares.join("");
+    axios
+      .put('/api/games/3/', localgame)
+      .then((res) => this.refreshGameData())
+      .catch((err) => console.log(err.response));
   }
 
   renderSquare(i) {
@@ -136,7 +181,7 @@ function GameMenu(props) {
   );
 }
 
-class Game extends React.Component {
+class Game extends Component {
   constructor(props) {
     super(props);
     this.state = {

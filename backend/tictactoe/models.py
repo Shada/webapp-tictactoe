@@ -28,6 +28,7 @@ class Game(models.Model):
     start_time = models.DateTimeField(auto_now=False, auto_now_add=True)
     player_one = models.CharField(max_length=64)
     player_two = models.CharField(max_length=64)
+    board_state = models.CharField(max_length=9)
     completed = models.BooleanField()
 
     def __str__(self):
