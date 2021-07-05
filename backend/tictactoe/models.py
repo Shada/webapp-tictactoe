@@ -11,7 +11,7 @@ class Move(models.Model):
     game = models.ForeignKey("Game", related_name='moves', on_delete=models.CASCADE)
     move_time = models.DateTimeField(auto_now=False, auto_now_add=True)
     square = models.IntegerField(validators=[MinValueValidator(0),
-                                       MaxValueValidator(9)])
+                                       MaxValueValidator(8)])
 
     class Meta:
         unique_together = ['game', 'square']
@@ -28,8 +28,8 @@ class Game(models.Model):
     start_time = models.DateTimeField(auto_now=False, auto_now_add=True)
     player_one = models.CharField(max_length=64)
     player_two = models.CharField(max_length=64)
-    board_state = models.CharField(max_length=9)
-    completed = models.BooleanField()
+    board_state = models.CharField(max_length=9, default=".........")
+    completed = models.BooleanField(default=False)
 
     def __str__(self):
         return '{0}: {1} vs {2}'.format(self.pk, self.player_one, self.player_two)

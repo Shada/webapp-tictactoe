@@ -55,14 +55,8 @@ class Board extends Component {
     this.state = {
       squares: Array(9).fill('.'), // TODO: This will be fetch from api.
       xIsNext: true,
-      game: {
-        start_time: new Date(),
-        player_one: "Player1",
-        player_two: "Player2",
-        board_state: ".........",
-        completed: false,
-        moves: [],
-      }
+      game_data: {},
+      gameID: props.gameID
     };
   }
 
@@ -73,10 +67,10 @@ class Board extends Component {
   refreshGameData() {
     var self = this;
     axios
-      .get('/api/games/3/')
+      .get('/api/games/' + self.state.gameID + '/')
       .then(function (response){
         console.log(response);
-        self.setState({game: response.data});
+        self.setState({game_data: response.data});
       })
       .catch(function(err) {
         console.log(err)
@@ -95,7 +89,7 @@ class Board extends Component {
       xIsNext: !this.state.xIsNext,
     });
     let move = {
-      game: 3,
+      game: this.state.game_data.id,
       square: i
     };
     
@@ -103,14 +97,10 @@ class Board extends Component {
       .post('/api/moves/', move)
       .catch((err) => console.log(err));
     
-    var localgame = this.state.game;
-    console.log(squares);
-    console.log(squares.toLocaleString());
-    console.log(squares.join(""));
-    localgame["board_state"] = squares.join("");
+    var self = this;
     axios
-      .put('/api/games/3/', localgame)
-      .then((res) => this.refreshGameData())
+      .patch('/api/games/' + self.state.game_data.id + '/', {board_state: squares.join("")})
+      .then((res) => self.refreshGameData())
       .catch((err) => console.log(err.response));
   }
 
@@ -158,7 +148,7 @@ function GameStarted(props) {
   return (
     <div className="game">
       <div className="game-board">
-        <Board />
+        <Board gameID={props.gameID} />
       </div>
       <div className="game-info">
         <div>
@@ -185,32 +175,50 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      gameID: 0,
-      gameStarted: false
+      gameID: -1,
+      gameStarted: false,
+      game_data: {}
     };
   }
   
   handleStartGameButtonClick() {
-    
-    this.setState({
-      gameStarted: true,
-      gameID: this.state.gameID + 1
-    });
-  }
-  
-  handleQuitGameButtonClick() {
-    let gameStarted = false;
+    // TODO: player names should be input via form
+    var new_game =
+    {
+      player_one: "Player1",
+      player_two: "Player2",
+      moves: []
+    }
 
-    this.setState({
-      gameStarted: gameStarted
-    });
+    var self = this;
+    axios
+      .post("/api/games/", new_game)
+      .then(function (response) {
+        self.setState({game_data: response.data});
+        self.setState({gameID: response.data.id});
+        self.setState({gameStarted: true});
+      })
+      .catch((err) => console.log(err.response));
+  }
+
+  handleQuitGameButtonClick() {
+    let self = this;
+
+    axios
+      .patch('/api/games/' + self.state.game_data.id +'/', {completed: true})
+      .then(self.setState({
+        gameStarted: false,
+        gameID: -1,
+        game: {}
+      }))
+      .catch((err) => console.log(err.response));
   }
 
   render() {
     if (this.state.gameStarted) {
       return (
         <div>
-          <GameStarted gameID={this.state.gameID}/>
+          <GameStarted game_data={this.state.game_data} gameID={this.state.game_data.id}/>
           <button onClick={() => this.handleQuitGameButtonClick()}>
             Quit Game
           </button>

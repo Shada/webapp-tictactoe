@@ -8,6 +8,10 @@ class GameView(viewsets.ModelViewSet):
     serializer_class = GameSerializer
     queryset = Game.objects.all()
 
+    def create(self, request, *args, **kwargs):
+        response = super(GameView, self).create(request, *args, **kwargs)
+        return response
+
 
 class MoveView(viewsets.ModelViewSet):
     serializer_class = MoveSerializer
