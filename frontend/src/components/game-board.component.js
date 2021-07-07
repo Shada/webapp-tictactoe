@@ -1,8 +1,6 @@
-import './App.css';
-import {Component} from "react";
-import axios from "axios";
-import GameDataService from "./services/game.service";
-import MoveDataService from "./services/move.service";
+import {Component, StrictMode} from "react";
+import GameDataService from "../services/game.service";
+import MoveDataService from "../services/move.service";
 
 // TODO: This should be done in the backend when connected 
 function calculateWinner(squares) {
@@ -63,7 +61,7 @@ class Board extends Component {
   }
 
   componentDidMount() {
-    this.getGameData(this.state.gameID);
+    this.getGameData(this.props.match.params.id);
   }
 
   getGameData(id) {
@@ -91,21 +89,20 @@ class Board extends Component {
       square: i
     };
 
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
-    this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext,
-    });
-
     MoveDataService.create(move)
       .then(response => {
+        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        this.setState({
+          squares: squares,
+          xIsNext: !this.state.xIsNext,
+        });
+
         console.log(response.data);
       })
       .catch(e => {
         console.log(e);
       });
 
-    var self = this;
     GameDataService.patch(this.state.currentGame.id, {board_state: squares.join("")})
       .then(response => {
         this.setState({
@@ -116,7 +113,6 @@ class Board extends Component {
       .catch(e => {
         console.log(e);
       });
-
   }
 
   renderSquare(i) {
@@ -158,111 +154,3 @@ class Board extends Component {
     );
   }
 }
-
-function GameStarted(props) {
-  return (
-    <div className="game">
-      <div className="game-board">
-        <Board gameID={props.gameID} />
-      </div>
-      <div className="game-info">
-        <div>
-          <p>GameID: {props.gameID}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function GameMenu(props) {
-  return (
-    <div className="game">
-      <div className="game-menu">
-        <div>
-          <p>Please click the button to start the game</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-class Game extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      gameID: -1,
-      gameStarted: false,
-      currentGame: {}
-    };
-  }
-  
-  handleStartGameButtonClick() {
-    // TODO: player names should be input via form
-    var new_game =
-    {
-      player_one: "Player1",
-      player_two: "Player2",
-      moves: []
-    }
-
-    var self = this;
-    GameDataService.create(new_game)
-      .then(response => {
-        self.setState({
-          currentGame: response.data,
-          gameID: response.data.id,
-          gameStarted: true
-        });
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  }
-
-  handleQuitGameButtonClick() {
-    let self = this;
-
-    axios
-      .patch('/api/games/' + self.state.currentGame.id +'/', {completed: true})
-      .then(self.setState({
-        gameStarted: false,
-        gameID: -1,
-        game: {}
-      }))
-      .catch((err) => console.log(err.response));
-  }
-
-  render() {
-    if (this.state.gameStarted) {
-      return (
-        <div>
-          <GameStarted gameID={this.state.currentGame.id}/>
-          <button onClick={() => this.handleQuitGameButtonClick()}>
-            Quit Game
-          </button>
-        </div>
-      );
-    }
-    return (
-      <div>
-        <GameMenu/>
-        <button onClick={() => this.handleStartGameButtonClick()}>
-          New Game
-        </button>
-      </div>
-    );
-  }
-}
-
-function App() {
-  return (
-      
-    <div className="App">
-      <header className="App-header">
-        <Game />
-      </header>
-    </div>
-  );
-}
-
-export default App;

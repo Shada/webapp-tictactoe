@@ -3,9 +3,9 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
-# TODO: Do I have the moves stored one by one, making a huge table (up to 9 moves per game),
-# or do I have one row per game, where the value is the list of moves, like a PGN in chess
-# Start with one row per move
+# TODO: When a move is added, update the board state
+# Then check winning status in backend
+# keep track of current player here or in fronend? 
 class Move(models.Model):
 
     game = models.ForeignKey("Game", related_name='moves', on_delete=models.CASCADE)
