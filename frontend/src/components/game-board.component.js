@@ -1,8 +1,8 @@
-import {Component, StrictMode} from "react";
+import { Component } from "react";
 import GameDataService from "../services/game.service";
 import MoveDataService from "../services/move.service";
 
-// TODO: This should be done in the backend when connected 
+
 function calculateWinner(squares) {
   const winning_rows = [
     [0, 1, 2],
@@ -47,7 +47,7 @@ function Square(props) {
   );
 }
 
-class Board extends Component {
+export default class Board extends Component {
   
   constructor(props) {
     super(props);
@@ -61,7 +61,7 @@ class Board extends Component {
   }
 
   componentDidMount() {
-    this.getGameData(this.props.match.params.id);
+    this.getGameData(this.state.gameID);
   }
 
   getGameData(id) {
@@ -89,14 +89,14 @@ class Board extends Component {
       square: i
     };
 
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+      squares: squares,
+      xIsNext: !this.state.xIsNext,
+    });
+
     MoveDataService.create(move)
       .then(response => {
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
-        this.setState({
-          squares: squares,
-          xIsNext: !this.state.xIsNext,
-        });
-
         console.log(response.data);
       })
       .catch(e => {
@@ -113,6 +113,7 @@ class Board extends Component {
       .catch(e => {
         console.log(e);
       });
+
   }
 
   renderSquare(i) {
