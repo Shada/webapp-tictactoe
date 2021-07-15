@@ -56,11 +56,12 @@ export default class Board extends Component {
       squares: Array(9).fill('.'), // TODO: This will be fetch from api.
       xIsNext: true,
       currentGame: {},
-      gameID: props.gameID
+      gameID: props.location.props.gameID
     };
   }
 
   componentDidMount() {
+    console.log(this.state.gameID);
     this.getGameData(this.state.gameID);
   }
 
@@ -123,6 +124,26 @@ export default class Board extends Component {
     />;
   }
 
+  handleQuitGameButtonClick() {
+    GameDataService.patch(this.state.gameID, {completed: true})
+      .then(response => {
+        this.setState({
+          game: {},
+          xIsNext: true,
+          gameID: -1
+        });
+        
+        this.props.history.push({
+            pathname: "/",
+          });
+
+        console.log(response);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
   render() {
     
     const winner = calculateWinner(this.state.squares);
@@ -134,7 +155,7 @@ export default class Board extends Component {
     }
 
     return (
-      <div>
+      <div style={{"topMargin": "65px"}}>
         <div className="status">{status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
@@ -151,6 +172,9 @@ export default class Board extends Component {
           {this.renderSquare(7)}
           {this.renderSquare(8)}
         </div>
+        <button onClick={() => this.handleQuitGameButtonClick()} href="/">
+          Quit Game
+        </button>
       </div>
     );
   }
