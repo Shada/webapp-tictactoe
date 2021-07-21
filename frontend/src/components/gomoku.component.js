@@ -1,7 +1,18 @@
 import React from 'react';
 import { Component } from 'react';
 
-function Square(props) {
+class Square extends Component{
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      value: props.value,
+      highLight: false,
+      onClick: props.onClick
+    }
+  }
+}
+function DrawSquare(props) {
   return (
     <button 
       className="square" 
@@ -49,7 +60,7 @@ class Gomoku extends Component {
     x = x + xDir;
     y = y + yDir;
 
-    while (count < 5) {
+    while (count < 6) {
       if (this.state.board[x][y] === lookingFor) {
         count++;
         x += xDir;
@@ -68,19 +79,19 @@ class Gomoku extends Component {
     let lookingFor = this.state.board[i][j];
 
     // diagonal \
-    if (1 + this.countElements(i,j,-1,-1) + this.countElements(i,j,1,1) === 4) {
+    if (1 + this.countElements(i,j,-1,-1) + this.countElements(i,j,1,1) === 5) {
       return lookingFor;
     }
     // diagonal /
-    if (1 + this.countElements(i,j,1,-1) + this.countElements(i,j,-1,1) === 4) {
+    if (1 + this.countElements(i,j,1,-1) + this.countElements(i,j,-1,1) === 5) {
       return lookingFor;
     }
     // verical |
-    if (1 + this.countElements(i,j,0,-1) + this.countElements(i,j,0,1) === 4) {
+    if (1 + this.countElements(i,j,0,-1) + this.countElements(i,j,0,1) === 5) {
       return lookingFor;
     }
     // horizontal --
-    if (1 + this.countElements(i,j,-1,0) + this.countElements(i,j,1,0) === 4) {
+    if (1 + this.countElements(i,j,-1,0) + this.countElements(i,j,1,0) === 5) {
       return lookingFor;
     }
 
@@ -119,7 +130,7 @@ class Gomoku extends Component {
   }
 
   renderSquare(i, j) {
-    return <Square key={i*19+j}
+    return <DrawSquare key={i*this.state.board[i].length+j}
       value={this.state.board[i][j]} 
       onClick={() => this.handleClick(i, j)}
     />;
