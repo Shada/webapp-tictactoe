@@ -1,6 +1,56 @@
 import React from 'react';
 import { Component } from 'react';
 
+import { Button, Modal, Form } from 'react-bootstrap'
+
+function ExampleModal() {
+  const [show, setShow] = React.useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const state={ name: null }
+
+  const handleChange = (e) => {state.name = e.target.value};
+
+  return (
+    <>
+      <Button variant="primary" onClick={handleShow}>
+        Launch demo modal
+      </Button>
+
+      <Modal
+        show={show}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Game Settings</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Enter the Player Names!
+          <Form.Group>
+              <Form.Label>Name: </Form.Label>
+              <Form.Control type="text" onChange={handleChange} value={state.name} placeholder="name input"/>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+}
+
+
 function DrawSquare(props) {
   return (
     <button 
@@ -9,8 +59,6 @@ function DrawSquare(props) {
       style={{
         borderWidth:1,
         borderColor:'rgba(0,0,0,0.2)',
-        justifyContent:'center',
-        alignItems:'center',
         width:35,
         height:35,
         backgroundColor:'#EEE',
@@ -113,16 +161,18 @@ class Gomoku extends Component {
 
     let status = this.calculateWin(i, j);
 
+
     this.setState({
       board: board,
       xIsNext: !this.state.xIsNext,
-      status: status
+      status: status,
+      modalIsOpen: true
     });
 
   }
 
   renderSquare(i, j) {
-    return <DrawSquare key={i*this.state.board[i].length+j}
+    return <DrawSquare class="col- mb-0 no-padding" key={i*this.state.board[i].length+j}
       value={this.state.board[i][j]} 
       onClick={() => this.handleClick(i, j)}
     />;
@@ -142,7 +192,7 @@ class Gomoku extends Component {
     var squares = [];
     
     for (var i = 0; i < this.state.board.length; i++) {
-      squares.push(<div key={i} className="row">{this.renderRow(i)}</div>);
+      squares.push(<div key={i} class="row g-0 mb-0">{this.renderRow(i)}</div>);
     }
 
     return squares;
@@ -154,11 +204,15 @@ class Gomoku extends Component {
       <div style={{
           paddingTop: '65px',
       }}>
-        {this.renderBoard()}
+
+        <div class="container">{this.renderBoard()}</div>
 
         <div style={{paddingTop: "25px"}}>
           {this.state.status !== null ? <p>Winner: {this.state.status}</p> : <p>Next : {this.state.xIsNext ? 'X' : 'O'}</p>}
         </div>
+
+        <ExampleModal />
+
       </div>
     );
   }
