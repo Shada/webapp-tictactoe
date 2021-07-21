@@ -30,42 +30,53 @@ class Gomoku extends Component {
   constructor(props) {
     super(props);
 
+    let boardMatrix = [];
+
+    for(var i = 0; i < 19; i++) {
+      boardMatrix.push(new Array(19).fill(null));
+    }
+
     this.state = {
-      squares: Array(361).fill(null), // TODO: This will be fetch from api.
+      board: boardMatrix,
       xIsNext: true
     };
   }
 
-  handleClick(i) {
-    var squares = this.state.squares.slice();
+  handleClick(i, j) {
+    var board = this.state.board.slice();
 
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    board[i][j] = this.state.xIsNext ? 'X' : 'O';
+
     this.setState({
-      squares: squares,
+      board: board,
       xIsNext: !this.state.xIsNext,
     });
 
   }
 
-  renderSquare(i) {
-    return <Square 
-      value={this.state.squares[i]} 
-      onClick={() => this.handleClick(i)}
+  renderSquare(i, j) {
+    return <Square key={i*19+j}
+      value={this.state.board[i][j]} 
+      onClick={() => this.handleClick(i, j)}
     />;
   }
 
-  renderRows(row) {
-    var rows = [];
-      for (var j = 0; j < 19; j++) {
-        rows.push(this.renderSquare(j+row*19));
-      }
-    return rows;
+  renderRow(i) {
+    var row = [];
+
+    for (var j = 0; j < this.state.board[i].length; j++) {
+      row.push(this.renderSquare(i, j));
+    }
+
+    return row;
   }
   renderBoard() {
     var squares = [];
-    for (var i = 0; i < 19; i++) {
-      squares.push(<div className="row" style={{flex:0, alignItems: 'center'}}>{this.renderRows(i)}</div>);
+    
+    for (var i = 0; i < this.state.board.length; i++) {
+      squares.push(<div key={i} className="row">{this.renderRow(i)}</div>);
     }
+
     return squares;
   }
 
