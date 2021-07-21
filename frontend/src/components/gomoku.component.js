@@ -38,18 +38,166 @@ class Gomoku extends Component {
 
     this.state = {
       board: boardMatrix,
-      xIsNext: true
+      xIsNext: true,
+      status: null
     };
   }
 
+  // check for 4-in-a-row around the most recent move
+  calculateWin(i, j) { 
+
+    //what piece we are looking for
+    let lookingFor = this.state.board[i][j];
+
+    // diagonals
+    let count = 1;
+    let x = i - 1;
+    let y = j - 1;
+    while (count <= 5) {
+      if (this.state.board[x][y] === lookingFor) {
+        count++;
+        x--;
+        y--;
+      }
+      else {
+        break;
+      }
+    }
+    x = i + 1;
+    y = j + 1;
+    while (count <= 5) {
+      if (this.state.board[x][y] === lookingFor) {
+        count++;
+        x++;
+        y++;
+      }
+      else {
+        break;
+      }
+    }
+
+    if (count === 4) {
+      return lookingFor;
+    }
+
+    count = 1;
+    x = i + 1;
+    y = j - 1;
+    while (count <= 5) {
+      if (this.state.board[x][y] === lookingFor) {
+        count++;
+        x++;
+        y--;
+      }
+      else {
+        break;
+      }
+    }
+    x = i - 1;
+    y = j + 1;
+    while (count <= 5) {
+      if (this.state.board[x][y] === lookingFor) {
+        count++;
+        x--;
+        y++;
+      }
+      else {
+        break;
+      }
+    }
+
+    if (count === 4) {
+      return lookingFor;
+    }
+
+    count = 1;
+    x = i + 1;
+    y = j;
+    while (count <= 5) {
+      if (this.state.board[x][y] === lookingFor) {
+        count++;
+        x++;
+      }
+      else {
+        break;
+      }
+    }
+
+    x = i - 1;
+    y = j;
+    while (count <= 5) {
+      if (this.state.board[x][y] === lookingFor) {
+        count++;
+        x--;
+      }
+      else {
+        break;
+      }
+    }
+
+    if (count === 4) {
+      return lookingFor;
+    }
+
+    count = 1;
+    x = i;
+    y = j + 1;
+    while (count <= 5) {
+      if (this.state.board[x][y] === lookingFor) {
+        count++;
+        y++;
+      }
+      else {
+        break;
+      }
+    }
+
+    x = i;
+    y = j - 1;
+    while (count <= 5) {
+      if (this.state.board[x][y] === lookingFor) {
+        count++;
+        y--;
+      }
+      else {
+        break;
+      }
+    }
+
+    if (count === 4) {
+      return lookingFor;
+    }
+
+    let result = "stalemate"
+
+    this.state.board.forEach(row => 
+      {
+        if(row.indexOf(null) !== -1) {
+          result = null
+        }
+      })
+
+    return result;
+  }
+
   handleClick(i, j) {
+    if (this.state.status != null) {
+      return;
+    }
     var board = this.state.board.slice();
 
+    if(board[i][j] != null) {
+      return;
+    }
+
     board[i][j] = this.state.xIsNext ? 'X' : 'O';
+
+    let status = this.calculateWin(i, j);
 
     this.setState({
       board: board,
       xIsNext: !this.state.xIsNext,
+      status: status
     });
 
   }
@@ -70,6 +218,7 @@ class Gomoku extends Component {
 
     return row;
   }
+
   renderBoard() {
     var squares = [];
     
@@ -87,6 +236,10 @@ class Gomoku extends Component {
           paddingTop: '65px',
       }}>
         {this.renderBoard()}
+
+        <div style={{paddingTop: "25px"}}>
+          {this.state.status !== null ? <p>Winner: {this.state.status}</p> : <p>Next : {this.state.xIsNext ? 'X' : 'O'}</p>}
+        </div>
       </div>
     );
   }
