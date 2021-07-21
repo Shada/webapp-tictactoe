@@ -43,133 +43,49 @@ class Gomoku extends Component {
     };
   }
 
+  countElements(x, y, xDir, yDir) {
+    let lookingFor = this.state.board[x][y];
+    let count = 0;
+    x = x + xDir;
+    y = y + yDir;
+
+    while (count < 5) {
+      if (this.state.board[x][y] === lookingFor) {
+        count++;
+        x += xDir;
+        y += yDir;
+      }
+      else {
+        break;
+      }
+    }
+    return count;
+  }
   // check for 4-in-a-row around the most recent move
   calculateWin(i, j) { 
 
     //what piece we are looking for
     let lookingFor = this.state.board[i][j];
 
-    // diagonals
-    let count = 1;
-    let x = i - 1;
-    let y = j - 1;
-    while (count <= 5) {
-      if (this.state.board[x][y] === lookingFor) {
-        count++;
-        x--;
-        y--;
-      }
-      else {
-        break;
-      }
-    }
-    x = i + 1;
-    y = j + 1;
-    while (count <= 5) {
-      if (this.state.board[x][y] === lookingFor) {
-        count++;
-        x++;
-        y++;
-      }
-      else {
-        break;
-      }
-    }
-
-    if (count === 4) {
+    // diagonal \
+    if (1 + this.countElements(i,j,-1,-1) + this.countElements(i,j,1,1) === 4) {
       return lookingFor;
     }
-
-    count = 1;
-    x = i + 1;
-    y = j - 1;
-    while (count <= 5) {
-      if (this.state.board[x][y] === lookingFor) {
-        count++;
-        x++;
-        y--;
-      }
-      else {
-        break;
-      }
-    }
-    x = i - 1;
-    y = j + 1;
-    while (count <= 5) {
-      if (this.state.board[x][y] === lookingFor) {
-        count++;
-        x--;
-        y++;
-      }
-      else {
-        break;
-      }
-    }
-
-    if (count === 4) {
+    // diagonal /
+    if (1 + this.countElements(i,j,1,-1) + this.countElements(i,j,-1,1) === 4) {
       return lookingFor;
     }
-
-    count = 1;
-    x = i + 1;
-    y = j;
-    while (count <= 5) {
-      if (this.state.board[x][y] === lookingFor) {
-        count++;
-        x++;
-      }
-      else {
-        break;
-      }
-    }
-
-    x = i - 1;
-    y = j;
-    while (count <= 5) {
-      if (this.state.board[x][y] === lookingFor) {
-        count++;
-        x--;
-      }
-      else {
-        break;
-      }
-    }
-
-    if (count === 4) {
+    // verical |
+    if (1 + this.countElements(i,j,0,-1) + this.countElements(i,j,0,1) === 4) {
       return lookingFor;
     }
-
-    count = 1;
-    x = i;
-    y = j + 1;
-    while (count <= 5) {
-      if (this.state.board[x][y] === lookingFor) {
-        count++;
-        y++;
-      }
-      else {
-        break;
-      }
-    }
-
-    x = i;
-    y = j - 1;
-    while (count <= 5) {
-      if (this.state.board[x][y] === lookingFor) {
-        count++;
-        y--;
-      }
-      else {
-        break;
-      }
-    }
-
-    if (count === 4) {
+    // horizontal --
+    if (1 + this.countElements(i,j,-1,0) + this.countElements(i,j,1,0) === 4) {
       return lookingFor;
     }
 
     let result = "stalemate"
-
+    // if we find any null, we should continue, else we have stalemate
     this.state.board.forEach(row => 
       {
         if(row.indexOf(null) !== -1) {
