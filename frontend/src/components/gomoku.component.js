@@ -1,17 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
 
-class Square extends Component{
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      value: props.value,
-      highLight: false,
-      onClick: props.onClick
-    }
-  }
-}
 function DrawSquare(props) {
   return (
     <button 
@@ -61,6 +50,9 @@ class Gomoku extends Component {
     y = y + yDir;
 
     while (count < 6) {
+      if(x < 0 || y < 0 || x >= this.state.board[0].length || y >= this.state.board.length) {
+        break;
+      }
       if (this.state.board[x][y] === lookingFor) {
         count++;
         x += xDir;
