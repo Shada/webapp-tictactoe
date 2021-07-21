@@ -172,9 +172,11 @@ export default class Board extends Component {
           {this.renderSquare(7)}
           {this.renderSquare(8)}
         </div>
-        <button onClick={() => this.handleQuitGameButtonClick()} href="/">
-          Quit Game
-        </button>
+        <div style={{paddingTop: "20px"}}>
+          <button onClick={() => this.handleQuitGameButtonClick()}>
+            Quit Game
+          </button>
+        </div>
       </div>
     );
   }

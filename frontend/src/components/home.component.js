@@ -31,7 +31,7 @@ class Game extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{paddingTop: 100, height:"100%"}}>
         <p>Please click the button to start the game</p>
         <button className="btn btn-primary" onClick={() => this.handleStartGameButtonClick()}>
           New Game

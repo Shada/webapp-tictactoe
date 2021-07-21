@@ -72,17 +72,11 @@ class Gomoku extends Component {
   render() {
     
     return (
-      <>
       <div style={{
-          justifyContent: 'center',
-          alignItems: 'center',
           paddingTop: '65px',
-          flex: 1,
-          flexDirection: 'row',
       }}>
         {this.renderBoard()}
       </div>
-      </>
     );
   }
 }

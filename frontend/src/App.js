@@ -11,8 +11,9 @@ import NavigationBar from "./components/Navbar/NavigationBar";
 function App() {
   return (
       
-    <div className="App" style={{backgroundColor: '#555'}}>
-        <NavigationBar />
+    <div className="App">
+      <NavigationBar />
+      <div className="App-header">
         <Router>
           <Switch>
             <Route path='/' exact component={Game} />
@@ -20,6 +21,7 @@ function App() {
             <Route path='/gomoku' component={Gomoku} />
           </Switch>
         </Router>
+      </div>
     </div>
   );
 }
